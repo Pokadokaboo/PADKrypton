@@ -3,6 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Camera } from '@ionic-native/camera';
 import { IonicPage, NavController, ViewController } from 'ionic-angular';
 
+import { AngularFireDatabase } from 'angularfire2/database';
+import { Observable } from 'rxjs/Observable';
+
 @IonicPage()
 @Component({
   selector: 'page-item-create',
@@ -15,19 +18,25 @@ export class ItemCreatePage {
 
   item: any;
 
+  items: Observable<any[]>;
+
   form: FormGroup;
 
-  constructor(public navCtrl: NavController, public viewCtrl: ViewController, formBuilder: FormBuilder, public camera: Camera) {
+  constructor(public navCtrl: NavController, public viewCtrl: ViewController, formBuilder: FormBuilder, public camera: Camera
+  , afDB: AngularFireDatabase) {
     this.form = formBuilder.group({
       profilePic: [''],
       name: ['', Validators.required],
       about: ['']
+      
     });
 
     // Watch the form for changes, and
     this.form.valueChanges.subscribe((v) => {
       this.isReadyToSave = this.form.valid;
     });
+    
+    this.items = afDB.list('cuisines').valueChanges();
   }
 
   ionViewDidLoad() {
